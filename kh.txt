@@ -1,0 +1,6 @@
+interface Tunnel3
+ description mDDoS-GRE-Tunnel (src 89.249.209.1)
+ ip unnumbered Loopback0
+ tunnel source 89.249.209.1
+ tunnel destination 216.6.118.162
+!

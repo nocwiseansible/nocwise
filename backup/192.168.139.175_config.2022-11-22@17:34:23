@@ -1,0 +1,1992 @@
+Building configuration...
+
+Current configuration : 76873 bytes
+!
+! Last configuration change at 19:08:43 EET Tue Nov 22 2022 by kbeyrouthy
+! NVRAM config last updated at 14:40:04 EET Mon Nov 21 2022 by kbeyrouthy
+!
+version 15.6
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform bfd-debug-trace 1
+!
+hostname Edge-BKP
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ MGMT
+ server name MGMT
+ ip vrf forwarding Mgmt-intf
+ ip tacacs source-interface GigabitEthernet0
+!
+aaa authentication login default group MGMT local enable
+aaa authentication login CONSOLE line
+aaa authentication enable default group MGMT none
+aaa authorization commands 0 default group MGMT local none 
+aaa authorization commands 1 default group MGMT local none 
+aaa authorization commands 15 default group MGMT local none 
+aaa authorization network default local 
+aaa accounting exec default
+ action-type start-stop
+ group MGMT
+!
+aaa accounting commands 0 default
+ action-type start-stop
+ group MGMT
+!
+aaa accounting commands 1 default
+ action-type start-stop
+ group MGMT
+!
+aaa accounting commands 15 default
+ action-type start-stop
+ group MGMT
+!
+!
+!
+!
+!
+!
+aaa session-id common
+clock timezone EET 2 0
+clock summer-time EEST recurring last Sun Mar 1:00 last Sat Oct 23:59
+facility-alarm critical exceed-action shutdown
+no ip source-route
+!
+
+no ip domain lookup
+ip domain name wise.net.lb
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid ASR-903 sn FOX2052PBV0
+license boot level metroipservices
+archive
+ log config
+  hidekeys
+ path scp://lion:993cc01a0c87bfd151741e7@192.168.139.65/$h$t.conf
+ write-memory
+!
+sdm prefer default 
+!
+username admin privilege 15 secret 5 $1$MS9m$JCLxhCDtTY63oPc/gYsYQ1
+!
+redundancy
+ mode sso
+bridge-domain 144 
+bridge-domain 149 
+bridge-domain 150 
+bridge-domain 1812 
+!
+!
+!
+!
+controller wanphy 0/0/0
+!
+controller dwdm 0/0/0
+!
+controller wanphy 0/0/1
+!
+controller dwdm 0/0/1
+!
+controller wanphy 0/0/2
+!
+controller dwdm 0/0/2
+!
+controller wanphy 0/0/3
+!
+controller dwdm 0/0/3
+!
+controller wanphy 0/0/4
+!
+controller dwdm 0/0/4
+!
+controller wanphy 0/0/5
+!
+controller dwdm 0/0/5
+!
+controller wanphy 0/0/6
+!
+controller dwdm 0/0/6
+!
+controller wanphy 0/0/7
+!
+controller dwdm 0/0/7
+!
+!
+transceiver type all
+ monitoring
+!
+!
+class-map match-all vlan179
+ match vlan  179
+class-map match-all vlan183
+ match vlan  183
+class-map match-all TESTING-SHAPE
+ match access-group 150
+class-map match-all ALL
+class-map match-any LION-GCC
+!
+policy-map TESTING-100M
+ class TESTING-SHAPE
+  police cir 100000000 pir 100000000
+   conform-action transmit 
+   exceed-action drop 
+   violate-action drop 
+policy-map POLICE-1300
+ class vlan183
+  police cir 1331200000 bc 4161500 pir 1331200000 be 4161500
+   conform-action transmit 
+   exceed-action drop 
+   violate-action drop 
+policy-map POLICE-1300-179
+ class vlan179
+  police cir 1331200000 bc 4161500 pir 1331200000 be 4161500
+   conform-action transmit 
+   exceed-action drop 
+   violate-action drop 
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ description BGP Peer (Jdeideh)
+ ip address 89.249.209.1 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback1
+ description BGP Peer (RasBeirut)
+ ip address 89.249.209.2 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback2
+ description BGP Peer (Elephant)
+ ip address 89.249.209.3 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback3
+ description BGP Peer (WiseUK Jdeideh)
+ ip address 89.249.209.4 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback4
+ description BGP Peer (IPv6 Tunnel Peer)
+ ip address 89.249.209.5 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback5
+ description BGP Peer (IPV6 UK)
+ ip address 89.249.209.6 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback6
+ description BGP Peer (WiseUK RasBeirut)
+ ip address 89.249.220.17 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Loopback7
+ description BGP Peer (WiseUK RasBeirut-1500MTU)
+ ip address 89.249.220.19 255.255.255.255
+ no ip redirects
+ no ip unreachables
+ no ip proxy-arp
+ shutdown
+!
+interface Tunnel0
+ description Hurricane Electric IPv6 Tunnel Broker
+ no ip address
+ shutdown
+ ipv6 address 2001:470:13:92::2/64
+ tunnel source 89.249.209.5
+ tunnel mode ipv6ip
+ tunnel destination 216.66.70.2
+!
+interface Tunnel1
+ description LuxLink IPv6 Tunnel
+ no ip address
+ shutdown
+ ipv6 address 2A02:4D8:4:1::2/64
+ tunnel source 89.249.209.5
+ tunnel mode ipv6ip
+ tunnel destination 91.142.48.5
+!
+interface Tunnel2
+ description WiseUK IPv6 Tunnel
+ no ip address
+ shutdown
+ ipv6 address 2A02:F50:0:5::A/64
+ tunnel source 89.249.209.6
+ tunnel mode ipv6ip
+ tunnel destination 185.144.221.34
+!
+interface Tunnel3
+ description mDDoS-GRE-Tunnel (source 89.249.209.1)
+ ip unnumbered Loopback0
+ tunnel source 89.249.209.1
+ tunnel destination 216.6.118.162
+!
+interface Tunnel4
+ description mDDoS-GRE-Tunnel (source 89.249.220.17)
+ ip unnumbered Loopback6
+ tunnel source 89.249.220.17
+ tunnel destination 216.6.118.162
+!
+interface Tunnel5
+ description Wise-UK-JD IP Tunnel
+ ip address 10.10.18.57 255.255.255.252
+ ip access-group EDGEFW in
+ tunnel source 89.249.209.4
+ tunnel mode ipip
+ tunnel destination 185.144.221.34
+!
+interface Tunnel6
+ description Wise-UK-RB IP Tunnel
+ ip address 10.10.18.61 255.255.255.252
+ ip access-group EDGEFW in
+ tunnel source 89.249.220.17
+ tunnel mode ipip
+ tunnel destination 185.144.221.34
+!
+interface Tunnel7
+ description Wise-UK-RB IP Tunnel (MTU 1500)
+ ip address 10.10.18.65 255.255.255.252
+ ip access-group EDGEFW in
+ tunnel source 89.249.220.19
+ tunnel mode ipip
+ tunnel destination 185.144.221.34
+!
+interface Tunnel10
+ description BIM-Doteasy
+ ip address 192.168.1.2 255.255.255.0
+ shutdown
+ tunnel source 89.249.209.1
+ tunnel destination 35.175.200.135
+!
+interface TenGigabitEthernet0/0/0
+ description To Dragon eth1/22 (International-MPLS 2)
+ no ip address
+ load-interval 30
+ service instance 183 ethernet
+  description International-MPLS-2
+  encapsulation dot1q 183
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 183
+ !
+!
+interface TenGigabitEthernet0/0/1
+ description To Elephant Te3/0/0
+ ip address 10.10.18.77 255.255.255.252
+ shutdown
+ ipv6 address 2A02:F50:0:1::A/127
+!
+interface TenGigabitEthernet0/0/2
+ description To Dragon eth1/9 (GGC-WISE)
+ ip address 185.58.203.1 255.255.255.224
+ load-interval 30
+!
+interface TenGigabitEthernet0/0/3
+ description To Dragon eth1/23 (International-MPLS 1)
+ no ip address
+ load-interval 30
+ service instance 179 ethernet
+  description International-MPLS-1
+  encapsulation dot1q 179
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 179
+ !
+!
+interface TenGigabitEthernet0/0/4
+ description To Dragon eth1/36 (CDNs)
+ no ip address
+ load-interval 30
+ service instance 140 ethernet
+  description Wise-IXP-Lion-Link1-CLOUDFLARE
+  encapsulation dot1q 140
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 140
+ !
+ service instance 142 ethernet
+  description IXP
+  encapsulation dot1q 142
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 142
+ !
+ service instance 143 ethernet
+  description FNA-IX
+  encapsulation dot1q 143
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 143
+ !
+ service instance 145 ethernet
+  description Wise-IXP-Lion-Link1-GGC
+  encapsulation dot1q 145
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 145
+ !
+ service instance 146 ethernet
+  description Wise-IXP-Lion-Link2-AKAMAI
+  encapsulation dot1q 146
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 146
+ !
+ service instance 148 ethernet
+  description Wise-IXP-Lion-Link1-ITWORKS
+  encapsulation dot1q 148
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 148
+ !
+ service instance 150 ethernet
+  description IX-FNA-TERRA
+  encapsulation dot1q 150
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 150
+ !
+ service instance 151 ethernet
+  description NETFLIX-TERRA-IX
+  encapsulation dot1q 151
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 151
+ !
+ service instance 1330 ethernet
+  description FB-Terranet
+  encapsulation dot1q 1330
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 1330
+ !
+ service instance 1810 ethernet
+  description FB-CACHE-IDM
+  encapsulation dot1q 1810
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 1810
+ !
+ service instance 1811 ethernet
+  description Netflix-THGV
+  encapsulation dot1q 1811
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 1811
+ !
+ service instance 3003 ethernet
+  description Starzplay
+  encapsulation dot1q 3003
+  rewrite ingress tag pop 1 symmetric
+  bridge-domain 3003
+ !
+!
+interface TenGigabitEthernet0/0/5
+ description TO-RPOCERA2
+ ip address 192.168.19.1 255.255.255.0
+ shutdown
+!
+interface TenGigabitEthernet0/0/6
+ description To-PROCERA
+ no ip address
+!
+interface TenGigabitEthernet0/0/7
+ no ip address
+!
+interface GigabitEthernet0
+ description To SwitchMGMT Gi1/4 (MGMT)
+ vrf forwarding Mgmt-intf
+ ip address 192.168.139.175 255.255.255.0
+ negotiation auto
+!
+interface BDI1
+ description WISE-GGC
+ no ip address
+ shutdown
+!
+interface BDI140
+ description Te0/0/3(Wise-IXP-Lion-Link1-CLOUDFLARE)
+ ip address 10.10.18.154 255.255.255.252
+ shutdown
+!
+interface BDI142
+ description Te0/0/3 (IXP)
+ ip address 10.10.18.37 255.255.255.252
+ ip access-group EDGEFW in
+ load-interval 30
+ shutdown
+ ipv6 address 2A02:F50:0:2::A/127
+!
+interface BDI143
+ description FNA-IX
+ ip address 10.10.18.181 255.255.255.252
+ shutdown
+!
+interface BDI144
+ description Te0/0/0 (RasBeirut-International)
+ ip address 172.16.40.14 255.255.255.252
+ ip access-group EDGEFW in
+ load-interval 30
+ shutdown
+ ipv6 address FC00::36/126
+!
+interface BDI145
+ description Te0/0/3 (Wise-IXP-Lion-Link1-GGC)
+ ip address 10.10.18.69 255.255.255.252
+ load-interval 30
+ shutdown
+!
+interface BDI146
+ description Te0/0/3 (Wise-IXP-Lion-Link1-AKAMAI)
+ ip address 10.10.18.73 255.255.255.252
+ load-interval 30
+ shutdown
+!
+interface BDI148
+ description Te0/0/3 (Wise-IXP-Lion-Link1-ITWORKS)
+ ip address 10.10.18.109 255.255.255.252
+ load-interval 30
+ shutdown
+!
+interface BDI150
+ description IX-FNA-TERRA
+ ip address 10.10.18.185 255.255.255.252
+ shutdown
+!
+interface BDI151
+ description NETFLIX-TERRA-IX
+ ip address 10.10.18.189 255.255.255.252
+ shutdown
+!
+interface BDI179
+ description Te0/0/3 (International-MPLS-1)
+ ip address 172.16.80.26 255.255.255.252
+ ip access-group EDGEFW in
+ shutdown
+ ipv6 address FCAB::6/126
+!
+interface BDI183
+ description Te0/0/3 (International-MPLS-2)
+ ip address 172.16.80.66 255.255.255.252
+ ip access-group EDGEFW in
+ shutdown
+ ipv6 address FCAB::A/126
+!
+interface BDI184
+ description Te0/0/0 (Jdeideh-International)
+ ip address 172.16.41.14 255.255.255.252
+ ip access-group EDGEFW in
+ load-interval 30
+ shutdown
+ ipv6 address FC00:1::2E/126
+!
+interface BDI897
+ description Te0/0/0 (FB-CACHE)
+ ip address 172.16.23.30 255.255.255.252
+ shutdown
+!
+interface BDI1330
+ description Te0/0/3 (FB-Cache-Terranet)
+ ip address 10.24.24.9 255.255.255.248
+ shutdown
+!
+interface BDI1810
+ description Te0/0/3 (FB-CACHE-IDM)
+ ip address 192.168.168.3 255.255.255.248 secondary
+ ip address 10.10.18.125 255.255.255.252
+ shutdown
+!
+interface BDI1811
+ description Te0/0/3 (Netflix-THGV)
+ ip address 10.24.24.2 255.255.255.248
+ shutdown
+!
+interface BDI1812
+ description testkhaled
+ ip address 192.168.20.1 255.255.255.0
+ ip access-group TESTDSCP in
+!
+interface BDI3003
+ description Starzplay
+ ip address 10.30.2.254 255.255.255.252
+ shutdown
+!
+router bgp 41833
+ bgp log-neighbor-changes
+ neighbor 10.10.18.58 remote-as 41833
+ neighbor 10.10.18.58 description Wise-UK-JD
+ neighbor 10.10.18.58 update-source Tunnel5
+ neighbor 10.10.18.62 remote-as 41833
+ neighbor 10.10.18.62 description Wise-UK-RB
+ neighbor 10.10.18.62 update-source Tunnel6
+ neighbor 10.10.18.126 remote-as 9051
+ neighbor 10.10.18.126 description FB-CACHE-IDM
+ neighbor 10.24.24.1 remote-as 59989
+ neighbor 10.24.24.1 description Netflix-Hisso
+ neighbor 10.24.24.10 remote-as 39010
+ neighbor 10.24.24.10 description FB-cache-Terranet
+ neighbor 10.30.2.253 remote-as 44870
+ neighbor 10.30.2.253 description starzplay
+ neighbor 2001:470:12:7E::1 remote-as 6939
+ neighbor 2001:470:12:7E::1 description TunnelBroker-Frankfurt
+ neighbor 2A02:4D8:4:1::1 remote-as 41589
+ neighbor 2A02:4D8:4:1::1 description LuxLinkIPv6
+ neighbor 2A02:F50:0:2::2 remote-as 41833
+ neighbor 2A02:F50:0:2::2 description IXP
+ neighbor 77.42.254.2 remote-as 42020
+ neighbor 77.42.254.2 description Jdeideh
+ neighbor 77.42.254.2 ebgp-multihop 250
+ neighbor 77.42.254.2 password 7 047604150C20424B1D
+ neighbor 77.42.254.2 update-source Loopback0
+ neighbor 77.42.255.2 remote-as 42020
+ neighbor 77.42.255.2 description RasBeirut
+ neighbor 77.42.255.2 ebgp-multihop 250
+ neighbor 77.42.255.2 password 7 110F100712000202107B
+ neighbor 77.42.255.2 update-source Loopback1
+ neighbor 89.249.209.0 remote-as 41833
+ neighbor 89.249.209.0 description Elephant
+ neighbor 89.249.209.0 update-source Loopback2
+ neighbor 89.249.209.60 remote-as 41833
+ neighbor 89.249.209.60 description IXP
+ neighbor 89.249.209.60 ebgp-multihop 5
+ neighbor 89.249.209.60 update-source Loopback0
+ neighbor 172.16.80.25 remote-as 42020
+ neighbor 172.16.80.25 description International-MPLS
+ neighbor 172.16.80.25 password 7 143A3D382F25040E101E67780F232B25
+ neighbor 172.16.80.65 remote-as 42020
+ neighbor 172.16.80.65 description International-MPLS-2
+ neighbor 172.16.80.65 password 7 1124363634332529301C7F087A7E18123F34
+ neighbor 185.58.203.30 remote-as 11344
+ neighbor 185.58.203.30 description WISE-GGC
+ neighbor 185.58.203.30 transport connection-mode passive
+ neighbor 185.58.203.30 password 7 11394D3D053802290D
+ neighbor FC00::35 remote-as 42020
+ neighbor FC00::35 description RASBEIRUT
+ neighbor FC00:1::2D remote-as 42020
+ neighbor FC00:1::2D description JDEIDEH-IPV6
+ neighbor FCAB::5 remote-as 42020
+ neighbor FCAB::5 description International-MPLS-IPV6
+ neighbor FCAB::5 password 7 03297438252E0F697A3F4F483A22273F
+ neighbor FCAB::9 remote-as 42020
+ neighbor FCAB::9 description International-MPLS-2-IPV6
+ neighbor FCAB::9 password 7 03297438252E0F697A3F4F29455F263C2819
+ !
+ address-family ipv4
+  network 46.227.248.0 mask 255.255.255.0
+  network 46.227.249.0 mask 255.255.255.0
+  network 46.227.250.0 mask 255.255.255.0
+  network 46.227.251.0 mask 255.255.255.0
+  network 46.227.252.0 mask 255.255.255.0
+  network 46.227.253.0 mask 255.255.255.0
+  network 46.227.254.0 mask 255.255.255.0
+  network 46.227.255.0 mask 255.255.255.0
+  network 89.249.208.0 mask 255.255.255.0
+  network 89.249.209.0 mask 255.255.255.0
+  network 89.249.210.0 mask 255.255.255.0
+  network 89.249.211.0 mask 255.255.255.0
+  network 89.249.212.0 mask 255.255.255.0
+  network 89.249.213.0 mask 255.255.255.0
+  network 89.249.214.0 mask 255.255.255.0
+  network 89.249.215.0 mask 255.255.255.0
+  network 89.249.216.0 mask 255.255.255.0
+  network 89.249.217.0 mask 255.255.255.0
+  network 89.249.218.0 mask 255.255.255.0
+  network 89.249.219.0 mask 255.255.255.0
+  network 89.249.220.0 mask 255.255.255.0
+  network 89.249.221.0 mask 255.255.255.0
+  network 89.249.222.0 mask 255.255.255.0
+  network 89.249.223.0 mask 255.255.255.0
+  network 93.185.224.0 mask 255.255.255.0
+  network 93.185.225.0 mask 255.255.255.0
+  network 93.185.226.0 mask 255.255.255.0
+  network 93.185.227.0 mask 255.255.255.0
+  network 93.185.228.0 mask 255.255.255.0
+  network 93.185.229.0 mask 255.255.255.0
+  network 93.185.230.0 mask 255.255.255.0
+  network 93.185.231.0 mask 255.255.255.0
+  network 93.185.232.0 mask 255.255.255.0
+  network 93.185.233.0 mask 255.255.255.0
+  network 93.185.234.0 mask 255.255.255.0
+  network 93.185.235.0 mask 255.255.255.0
+  network 93.185.236.0 mask 255.255.255.0
+  network 93.185.237.0 mask 255.255.255.0
+  network 93.185.238.0 mask 255.255.255.0
+  network 93.185.239.0 mask 255.255.255.0
+  network 95.141.48.0 mask 255.255.255.0
+  network 95.141.49.0 mask 255.255.255.0
+  network 95.141.50.0 mask 255.255.255.0
+  network 95.141.51.0 mask 255.255.255.0
+  network 95.141.52.0 mask 255.255.255.0
+  network 95.141.53.0 mask 255.255.255.0
+  network 95.141.54.0 mask 255.255.255.0
+  network 95.141.55.0 mask 255.255.255.0
+  network 95.141.56.0 mask 255.255.255.0
+  network 95.141.57.0 mask 255.255.255.0
+  network 95.141.58.0 mask 255.255.255.0
+  network 95.141.59.0 mask 255.255.255.0
+  network 95.141.60.0 mask 255.255.255.0
+  network 95.141.61.0 mask 255.255.255.0
+  network 95.141.62.0 mask 255.255.255.0
+  network 95.141.63.0 mask 255.255.255.0
+  network 141.138.176.0 mask 255.255.255.0
+  network 141.138.177.0 mask 255.255.255.0
+  network 141.138.178.0 mask 255.255.255.0
+  network 141.138.179.0 mask 255.255.255.0
+  network 141.138.180.0 mask 255.255.255.0
+  network 141.138.181.0 mask 255.255.255.0
+  network 141.138.182.0 mask 255.255.255.0
+  network 141.138.183.0 mask 255.255.255.0
+  network 141.138.184.0 mask 255.255.255.0
+  network 141.138.185.0 mask 255.255.255.0
+  network 141.138.186.0 mask 255.255.255.0
+  network 141.138.187.0 mask 255.255.255.0
+  network 141.138.188.0 mask 255.255.255.0
+  network 141.138.189.0 mask 255.255.255.0
+  network 141.138.190.0 mask 255.255.255.0
+  network 141.138.191.0 mask 255.255.255.0
+  network 185.58.200.0 mask 255.255.255.0
+  network 185.58.201.0 mask 255.255.255.0
+  network 185.58.202.0 mask 255.255.255.0
+  network 185.58.203.0 mask 255.255.255.0
+  network 185.220.138.0 mask 255.255.255.0
+  neighbor 10.10.18.58 activate
+  neighbor 10.10.18.58 prefix-list PREFIX-FROM-WISE-UK in
+  neighbor 10.10.18.58 prefix-list WISE-NETWORKS out
+  neighbor 10.10.18.58 route-map ROUTEMAP-TO-WISE-UK-JD out
+  neighbor 10.10.18.62 activate
+  neighbor 10.10.18.62 prefix-list PREFIX-FROM-WISE-UK in
+  neighbor 10.10.18.62 prefix-list WISE-NETWORKS out
+  neighbor 10.10.18.62 route-map ROUTEMAP-TO-WISE-UK-RB out
+  neighbor 10.10.18.126 activate
+  neighbor 10.10.18.126 soft-reconfiguration inbound
+  neighbor 10.10.18.126 prefix-list FROM-FB-CACHE-IDM in
+  neighbor 10.10.18.126 prefix-list TO-FB-CACHE-IDM out
+  neighbor 10.24.24.1 activate
+  neighbor 10.24.24.1 soft-reconfiguration inbound
+  neighbor 10.24.24.1 prefix-list FROM-NETFLIX-HISSO in
+  neighbor 10.24.24.1 prefix-list TO-NETFLIX-HISSO out
+  neighbor 10.24.24.10 activate
+  neighbor 10.24.24.10 soft-reconfiguration inbound
+  neighbor 10.24.24.10 prefix-list FROM-FB-TERRANET in
+  neighbor 10.24.24.10 prefix-list TO-FB-TERRANET out
+  neighbor 10.30.2.253 activate
+  neighbor 10.30.2.253 soft-reconfiguration inbound
+  neighbor 10.30.2.253 prefix-list FROM-Starzplay in
+  neighbor 10.30.2.253 prefix-list TO-Starzplay out
+  no neighbor 2001:470:12:7E::1 activate
+  no neighbor 2A02:4D8:4:1::1 activate
+  no neighbor 2A02:F50:0:2::2 activate
+  neighbor 77.42.254.2 activate
+  neighbor 77.42.254.2 remove-private-as
+  neighbor 77.42.254.2 prefix-list PREFIX-FROM-JDEIDEH-BK in
+  neighbor 77.42.254.2 prefix-list WISE-NETWORKS-JDEIDEH-EMPTY out
+  neighbor 77.42.254.2 route-map ROUTEMAP-TO-JDEIDEH out
+  neighbor 77.42.255.2 activate
+  neighbor 77.42.255.2 remove-private-as
+  neighbor 77.42.255.2 prefix-list PREFIX-FROM-RAS-BEIRUT-BK in
+  neighbor 77.42.255.2 prefix-list WISE-NETWORKS-RAS-BEIRUT-EMPTY out
+  neighbor 77.42.255.2 route-map ROUTEMAP-TO-RAS-BEIRUT out
+  neighbor 89.249.209.0 activate
+  neighbor 89.249.209.0 soft-reconfiguration inbound
+  neighbor 89.249.209.0 prefix-list PREFIX-FROM-ELEPHANT in
+  neighbor 89.249.209.0 prefix-list PREFIX-TO-ELEPHANT out
+  neighbor 89.249.209.60 activate
+  neighbor 89.249.209.60 route-reflector-client
+  neighbor 89.249.209.60 soft-reconfiguration inbound
+  neighbor 89.249.209.60 prefix-list PREFIX-FROM-IXP in
+  neighbor 89.249.209.60 prefix-list WISE-IX out
+  neighbor 89.249.209.60 route-map ROUTEMAP-WISE-IX out
+  neighbor 172.16.80.25 activate
+  neighbor 172.16.80.25 remove-private-as
+  neighbor 172.16.80.25 prefix-list PREFIX-FROM-INTERNATIONAL in
+  neighbor 172.16.80.25 prefix-list WISE-NETWORKS out
+  neighbor 172.16.80.25 route-map ROUTEMAP-TO-JDEIDEH out
+  neighbor 172.16.80.65 activate
+  neighbor 172.16.80.65 remove-private-as
+  neighbor 172.16.80.65 prefix-list PREFIX-FROM-INTERNATIONAL-2 in
+  neighbor 172.16.80.65 prefix-list WISE-NETWORKS out
+  neighbor 172.16.80.65 route-map ROUTEMAP-TO-RAS-BEIRUT out
+  neighbor 185.58.203.30 activate
+  neighbor 185.58.203.30 prefix-list PREFIX-FROM-WISE-GGC in
+  neighbor 185.58.203.30 prefix-list PREFIX-TO-WISE-GGC out
+  no neighbor FC00::35 activate
+  no neighbor FC00:1::2D activate
+  no neighbor FCAB::5 activate
+  no neighbor FCAB::9 activate
+ exit-address-family
+ !
+ address-family ipv6
+  network 2A02:F50::/32
+  neighbor 2001:470:12:7E::1 activate
+  neighbor 2001:470:12:7E::1 soft-reconfiguration inbound
+  neighbor 2001:470:12:7E::1 prefix-list PREFIX-FROM-TUNNEL-BROKER in
+  neighbor 2001:470:12:7E::1 prefix-list PREFIX-TO-TUNNEL-BROKER out
+  neighbor 2A02:4D8:4:1::1 activate
+  neighbor 2A02:4D8:4:1::1 soft-reconfiguration inbound
+  neighbor 2A02:4D8:4:1::1 prefix-list PREFIX-FROM-TUNNEL-BROKER in
+  neighbor 2A02:4D8:4:1::1 prefix-list PREFIX-TO-TUNNEL-BROKER out
+  neighbor 2A02:4D8:4:1::1 maximum-prefix 2147483647
+  neighbor 2A02:F50:0:2::2 activate
+  neighbor 2A02:F50:0:2::2 soft-reconfiguration inbound
+  neighbor 2A02:F50:0:2::2 prefix-list PREFIX-TO-IXP out
+  neighbor FC00::35 activate
+  neighbor FC00::35 soft-reconfiguration inbound
+  neighbor FC00::35 prefix-list PPREFIX-FROM-RAS-BEIRUT-BK out
+  neighbor FC00:1::2D activate
+  neighbor FC00:1::2D soft-reconfiguration inbound
+  neighbor FC00:1::2D prefix-list PREFIX-FROM-JDEIDEH-BK out
+  neighbor FCAB::5 activate
+  neighbor FCAB::5 soft-reconfiguration inbound
+  neighbor FCAB::5 prefix-list PREFIX-TO-JDEIDEH out
+  neighbor FCAB::9 activate
+  neighbor FCAB::9 soft-reconfiguration inbound
+  neighbor FCAB::9 prefix-list PREFIX-TO-RASBEIRUT out
+ exit-address-family
+!
+ip forward-protocol nd
+!
+no ip ftp passive
+ip ftp source-interface GigabitEthernet0
+ip ftp username lion
+ip ftp password 7 15501D1D241B67221D787E131E07530744456B1A00
+no ip http server
+no ip http ctc authentication
+no ip http secure-server
+ip tftp source-interface GigabitEthernet0
+ip ssh source-interface GigabitEthernet0
+ip ssh version 2
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip route 0.0.0.0 0.0.0.0 172.16.80.25
+ip route 46.227.248.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.249.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.250.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.251.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.251.168 255.255.255.252 10.10.18.38
+ip route 46.227.252.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.253.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.254.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 46.227.255.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 77.42.254.2 255.255.255.255 172.16.41.13 name JDEIDEH-BGP-Peer
+ip route 77.42.255.2 255.255.255.255 172.16.40.13 name Ras-Beirut-BGP-Peer
+ip route 89.249.208.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.209.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.209.0 255.255.255.255 10.10.18.78 name Elephant-BGP-Peer
+ip route 89.249.209.60 255.255.255.255 10.10.18.38 name IXP-BGP-Peer
+ip route 89.249.210.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.211.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.212.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.213.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.214.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.215.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.216.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.217.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.218.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.219.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.220.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.221.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.222.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 89.249.223.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.224.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.225.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.226.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.227.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.228.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.229.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.230.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.231.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.232.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.233.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.234.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.235.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.236.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.237.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.238.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 93.185.239.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.49.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.50.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.51.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.52.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.53.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.54.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.55.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.56.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.57.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.58.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.59.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.60.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.61.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.62.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 95.141.63.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.176.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.177.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.177.254 255.255.255.255 10.10.18.78 name rs-webserver
+ip route 141.138.178.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.179.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.180.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.181.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.182.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.183.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.184.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.185.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.186.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.187.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.188.0 255.255.252.0 10.10.18.78 name WISE_Network
+ip route 141.138.188.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.189.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.190.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 141.138.191.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 185.58.200.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 185.58.201.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 185.58.202.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 185.58.203.0 255.255.255.0 10.10.18.78 name WISE_Network
+ip route 185.91.96.0 255.255.255.0 10.10.18.70 name GGC
+ip route 185.91.97.0 255.255.255.0 10.10.18.110 name ITWORKS
+ip route 185.91.99.2 255.255.255.255 10.10.18.110 name ITWORKS
+!
+ip access-list extended EDGEFW
+ permit ip any host 95.141.59.141
+ permit icmp any host 89.249.208.74
+ permit icmp any 46.227.253.40 0.0.0.7
+ permit icmp any 141.138.189.240 0.0.0.7
+ permit icmp any host 141.138.182.163
+ permit icmp any host 89.249.209.76
+ permit ip any 141.138.182.160 0.0.0.7
+ permit ip any host 95.141.63.239
+ deny   udp any host 141.138.191.99 eq domain
+ deny   udp any 46.227.248.56 0.0.0.7 eq domain
+ permit ip 141.138.182.160 0.0.0.7 any
+ permit icmp any 46.227.253.164 0.0.0.3
+ permit icmp any host 93.185.224.4
+ permit tcp any host 46.227.252.138 eq 8291
+ permit tcp any 46.227.249.176 0.0.0.7 eq 443
+ permit tcp any 46.227.249.176 0.0.0.7 eq www
+ deny   udp any host 141.138.179.142 eq domain
+ permit icmp any 89.249.222.48 0.0.0.7
+ permit ip 172.16.80.24 0.0.0.3 any
+ permit icmp any 141.138.186.120 0.0.0.7
+ permit ip any host 93.185.224.249
+ permit ip any 46.227.251.84 0.0.0.3
+ permit ip 46.227.251.84 0.0.0.3 any
+ permit icmp any host 141.138.191.178
+ permit icmp any 46.227.252.152 0.0.0.7
+ permit icmp any 46.227.252.144 0.0.0.7
+ permit tcp any 185.58.202.0 0.0.0.7 eq www
+ permit icmp any 89.249.214.224 0.0.0.7
+ permit icmp any 89.249.214.168 0.0.0.7
+ permit icmp any 46.227.252.208 0.0.0.7
+ permit ip any 141.138.187.216 0.0.0.7
+ permit ip 141.138.187.216 0.0.0.7 any
+ permit tcp any 185.58.202.0 0.0.0.7 eq 443
+ permit icmp any 89.249.219.192 0.0.0.7
+ permit icmp any 89.249.219.48 0.0.0.7
+ permit icmp any host 89.249.217.9
+ permit ip any host 89.249.218.148
+ deny   icmp any 141.138.178.240 0.0.0.7 timestamp-reply
+ permit icmp any 185.182.112.0 0.0.3.255
+ permit icmp any 46.227.248.8 0.0.0.7
+ permit icmp any host 95.141.59.23
+ permit icmp any host 89.249.210.115
+ permit 22 any host 89.249.210.115
+ permit 23 any host 89.249.210.115
+ permit tcp any host 95.141.59.141 eq 139 445
+ permit udp any host 95.141.59.141 eq 445
+ permit icmp any 89.249.210.80 0.0.0.7
+ permit ip any host 95.141.59.59
+ deny   tcp any host 89.249.208.83 eq www
+ permit icmp any 46.227.254.248 0.0.0.7
+ permit icmp any 93.185.236.0 0.0.0.15
+ permit icmp any host 89.249.209.178
+ permit icmp any host 46.227.254.49
+ permit tcp any eq 22 host 89.249.209.110
+ permit icmp any 141.138.189.232 0.0.0.7
+ permit icmp any host 89.249.208.170
+ permit icmp any 46.227.253.80 0.0.0.7
+ deny   icmp any 141.138.178.240 0.0.0.7 timestamp-request
+ permit icmp any 93.185.224.40 0.0.0.7
+ deny   ip 141.138.188.136 0.0.0.7 host 104.21.12.105
+ deny   ip host 104.21.12.105 141.138.188.136 0.0.0.7
+ permit ip any 91.240.69.0 0.0.0.255
+ permit ip any host 89.249.208.76
+ permit ip any host 89.249.217.6
+ permit icmp any 46.227.252.224 0.0.0.15
+ permit icmp any 46.227.254.0 0.0.0.31
+ permit icmp any 46.227.254.64 0.0.0.31
+ permit icmp any 46.227.254.104 0.0.0.7
+ permit icmp any 46.227.253.64 0.0.0.7
+ permit icmp any 185.58.202.192 0.0.0.15
+ deny   icmp any 141.138.191.120 0.0.0.7 timestamp-reply
+ permit icmp any host 46.227.251.34
+ permit tcp any host 46.227.251.34 eq telnet
+ permit tcp any host 46.227.251.34 eq 22
+ permit icmp any host 46.227.251.42
+ permit tcp any host 46.227.251.42 eq telnet
+ permit tcp any host 46.227.251.42 eq 22
+ permit icmp any 89.249.212.160 0.0.0.7
+ deny   udp any host 141.138.188.26 eq domain
+ permit tcp host 185.176.210.173 host 89.249.213.83 eq 22
+ permit icmp any 46.227.253.176 0.0.0.7
+ permit icmp any host 89.249.219.54
+ permit icmp any host 89.249.217.100
+ permit icmp any host 89.249.213.66
+ permit icmp any 89.249.215.152 0.0.0.7
+ deny   icmp any 141.138.191.120 0.0.0.7 timestamp-request
+ deny   tcp any 141.138.191.120 0.0.0.7 eq www
+ deny   tcp any 141.138.178.240 0.0.0.7 eq www
+ deny   tcp any 46.227.249.224 0.0.0.7 eq www
+ deny   tcp any 46.227.249.232 0.0.0.7 eq www
+ permit icmp any host 89.249.208.66
+ permit icmp any host 89.249.208.81
+ permit icmp any host 89.249.218.27
+ permit ip host 89.249.218.201 any
+ permit ip any host 89.249.218.201
+ deny   icmp any 46.227.249.224 0.0.0.7 timestamp-reply
+ permit ip any 141.138.189.48 0.0.0.7
+ deny   icmp any 46.227.249.224 0.0.0.7 timestamp-request
+ deny   icmp any 46.227.249.232 0.0.0.7 timestamp-reply
+ deny   icmp any 46.227.249.232 0.0.0.7 timestamp-request
+ permit ip 172.16.80.64 0.0.0.3 any
+ permit icmp host 14.141.1.118 any
+ permit icmp host 14.141.1.119 any
+ permit icmp host 115.112.172.156 any
+ permit icmp host 115.112.172.164 any
+ permit ip any host 89.249.223.8
+ permit ip host 89.249.223.8 any
+ permit ip any 46.227.252.216 0.0.0.7
+ permit ip any 141.138.191.24 0.0.0.7
+ permit ip any 141.138.191.120 0.0.0.7
+ permit ip any 141.138.178.240 0.0.0.7
+ permit ip any 46.227.249.232 0.0.0.7
+ permit ip any 46.227.249.224 0.0.0.7
+ permit ip any 46.227.249.216 0.0.0.7
+ permit tcp host 27.33.184.51 host 89.249.213.26 eq 22
+ permit icmp any host 46.227.248.251
+ permit icmp any host 89.249.218.54
+ permit icmp any host 141.138.183.25
+ deny   udp any host 141.138.182.226 eq domain
+ permit icmp any 46.227.252.0 0.0.0.7
+ permit icmp any 89.249.222.56 0.0.0.7
+ permit icmp any 141.138.189.16 0.0.0.7
+ permit tcp host 162.219.72.236 host 89.249.213.26 eq 22
+ deny   ip any host 141.138.182.195
+ permit tcp host 52.64.117.47 host 89.249.213.26 eq 22
+ permit tcp host 210.50.101.184 host 89.249.213.26 eq 22
+ permit ip any host 185.58.201.5
+ permit ip any host 89.249.223.252
+ permit ip any host 89.249.218.214
+ permit icmp any host 89.249.223.12 traceroute
+ permit ip any 46.227.249.240 0.0.0.7
+ permit icmp any 141.138.178.88 0.0.0.7
+ permit ip any 141.138.178.88 0.0.0.7
+ permit ip any 141.138.180.136 0.0.0.7
+ permit tcp any host 89.249.213.83 eq 22
+ permit icmp any host 89.249.219.234
+ deny   udp any host 89.249.214.250 eq domain
+ deny   udp any 95.141.48.0 0.0.0.255 eq domain
+ deny   udp any 95.141.57.0 0.0.0.255 eq domain
+ deny   udp any 95.141.58.0 0.0.0.255 eq domain
+ deny   udp any 95.141.60.0 0.0.0.255 eq domain
+ deny   udp any 89.249.215.40 0.0.0.7 eq domain
+ deny   udp any host 185.58.202.106 eq domain
+ deny   udp any 46.227.251.16 0.0.0.3 eq domain
+ deny   udp any 95.141.61.0 0.0.0.255 eq domain
+ deny   udp any 95.141.62.0 0.0.0.255 eq domain
+ deny   udp any 95.141.63.0 0.0.0.255 eq domain
+ deny   tcp any host 141.138.179.238 eq 22 ftp telnet pop3 143 3389
+ deny   ip any host 89.249.216.4
+ deny   udp any host 141.138.179.238 eq tftp snmp 1900 5353 11211
+ permit tcp host 185.126.46.237 host 89.249.215.138 eq 8291
+ permit tcp host 91.121.234.112 host 89.249.215.138 eq 8291
+ permit tcp host 5.196.142.140 host 89.249.215.138 eq 8291
+ permit tcp host 188.165.125.96 host 89.249.215.138 eq 8291
+ permit ip any host 185.182.112.7
+ permit tcp any host 89.249.212.3 eq 8291
+ permit tcp any host 89.249.215.155 eq 8291
+ permit tcp any host 89.249.215.154 eq 8291
+ permit ip host 89.249.209.60 any
+ permit icmp any 89.249.219.96 0.0.0.7
+ permit icmp any 89.249.222.216 0.0.0.7
+ permit icmp any 89.249.215.168 0.0.0.7
+ permit icmp any 141.138.186.16 0.0.0.7
+ permit icmp any 89.249.210.216 0.0.0.7
+ permit tcp any host 89.249.221.58 eq 8291
+ deny   udp any host 141.138.188.226 eq domain
+ permit icmp host 14.141.1.118 host 89.249.220.16
+ permit icmp host 14.141.1.119 host 89.249.220.16
+ permit icmp host 115.112.172.156 host 89.249.220.16
+ permit icmp host 115.112.172.164 host 89.249.220.16
+ permit tcp any 46.227.248.0 0.0.0.7 eq 8291
+ permit tcp any 141.138.187.72 0.0.0.7 eq 8291
+ permit tcp any host 89.249.215.180 eq 8291
+ permit tcp any host 141.138.188.226 eq 8291
+ deny   udp any host 141.138.189.187 eq domain
+ permit icmp any 141.138.186.192 0.0.0.7
+ permit tcp any 89.249.214.24 0.0.0.7 eq 8291
+ permit tcp any 89.249.220.136 0.0.0.7 eq 8291
+ permit tcp any 141.138.181.48 0.0.0.7 eq 8291
+ permit ip any host 89.249.217.100
+ permit tcp any eq 22 host 89.249.208.76
+ deny   udp any host 89.249.211.162 eq domain
+ permit icmp any host 89.249.218.196
+ permit icmp any host 141.138.191.209
+ permit icmp any host 89.249.214.10
+ permit ip host 185.58.201.5 any
+ permit icmp any host 93.185.224.160
+ permit tcp any eq 22 host 89.249.208.83
+ permit tcp any eq 22 host 89.249.208.74
+ permit ip any host 89.249.212.3
+ permit icmp any 89.249.215.128 0.0.0.7
+ permit icmp any 89.249.215.72 0.0.0.7
+ permit icmp any 89.249.221.240 0.0.0.15
+ permit tcp any host 95.141.59.13 eq 8291
+ permit tcp any host 95.141.59.13 eq www
+ permit tcp any host 89.249.218.8 eq www
+ permit tcp any host 89.249.222.100 eq www
+ permit icmp any host 89.249.210.171
+ permit icmp any 141.138.182.88 0.0.0.7
+ permit ip any host 95.141.59.13
+ deny   ip 185.97.92.0 0.0.3.255 89.249.212.104 0.0.0.7
+ permit tcp any 141.138.191.48 0.0.0.7 eq 8291
+ permit tcp any host 89.249.223.152 eq 8291
+ permit icmp any 89.249.211.136 0.0.0.7
+ permit tcp any host 89.249.215.28 eq www
+ permit tcp any host 89.249.217.79 eq www
+ permit tcp any host 46.227.249.107 eq www
+ permit tcp any host 141.138.191.2 eq www
+ permit tcp any host 89.249.215.28 eq 8291
+ permit tcp any host 95.141.59.45 eq www
+ permit icmp any host 141.138.182.58
+ permit tcp any host 89.249.215.28 eq 22
+ permit icmp any host 89.249.215.28
+ permit tcp any host 89.249.215.29 eq www
+ permit tcp any host 89.249.215.29 eq 8291
+ permit tcp any host 89.249.215.29 eq 22
+ permit icmp any host 89.249.215.29
+ permit icmp any host 89.249.223.231
+ permit icmp any host 93.185.224.200
+ permit icmp any 89.249.220.208 0.0.0.7
+ permit icmp any host 89.249.223.128
+ permit icmp any host 141.138.179.0
+ permit icmp any host 141.138.179.6
+ permit icmp any host 185.58.201.2
+ permit icmp any 89.249.219.88 0.0.0.7
+ permit icmp any host 89.249.211.67
+ permit icmp any host 185.58.201.250
+ permit icmp any host 89.249.219.89
+ permit icmp any host 89.249.218.200
+ permit icmp any host 93.185.224.40
+ permit icmp any 89.249.212.40 0.0.0.7
+ permit icmp any 89.249.209.208 0.0.0.15
+ permit icmp any host 89.249.218.218
+ permit icmp any host 89.249.218.219
+ permit icmp any host 89.249.218.220
+ permit icmp any host 89.249.218.221
+ permit icmp any 89.249.210.160 0.0.0.7
+ permit icmp any host 141.138.186.10
+ permit icmp any host 89.249.220.150
+ permit icmp any host 89.249.211.194
+ permit icmp any 89.249.212.192 0.0.0.7
+ permit icmp any host 89.249.209.179
+ permit icmp any host 89.249.218.197
+ permit icmp any host 89.249.210.122
+ permit icmp any 141.138.186.40 0.0.0.7
+ permit icmp any 89.249.210.184 0.0.0.7
+ permit icmp any host 89.249.208.234
+ permit icmp any 89.249.212.80 0.0.0.7
+ permit icmp any 46.227.249.104 0.0.0.7
+ permit icmp any 89.249.212.88 0.0.0.7
+ permit icmp any 89.249.212.96 0.0.0.7
+ permit icmp any 89.249.212.104 0.0.0.7
+ permit icmp any 89.249.221.128 0.0.0.7
+ permit icmp any 89.249.209.128 0.0.0.7
+ permit icmp any 89.249.221.224 0.0.0.7
+ permit icmp any 89.249.221.32 0.0.0.7
+ permit icmp any 89.249.208.184 0.0.0.7
+ permit icmp any 89.249.221.24 0.0.0.7
+ permit icmp any 89.249.211.160 0.0.0.7
+ permit icmp any 89.249.211.176 0.0.0.7
+ permit icmp any 89.249.220.184 0.0.0.7
+ permit icmp any 89.249.212.72 0.0.0.7
+ permit icmp any host 89.249.218.36
+ permit icmp any host 89.249.210.233
+ permit icmp any 89.249.211.24 0.0.0.7
+ permit icmp any host 89.249.218.112
+ permit icmp any host 89.249.211.161
+ permit icmp any host 89.249.218.249
+ permit icmp any host 89.249.211.61
+ permit icmp any host 89.249.208.116
+ permit icmp any host 89.249.212.163
+ permit icmp any host 89.249.220.68
+ permit icmp any 89.249.208.56 0.0.0.7
+ permit icmp any host 141.138.181.72
+ permit icmp any 89.249.208.32 0.0.0.7
+ permit icmp any 89.249.219.160 0.0.0.7
+ permit icmp any host 93.185.224.21
+ permit icmp any host 89.249.210.188
+ permit icmp any 89.249.209.32 0.0.0.15
+ permit icmp any host 89.249.210.235
+ permit icmp any 89.249.210.128 0.0.0.7
+ permit tcp any host 89.249.220.59 eq 22
+ permit tcp any host 141.138.186.10 eq 22
+ permit tcp any host 89.249.209.126 eq 22
+ permit tcp any 89.249.221.224 0.0.0.7 eq 22
+ permit tcp any 141.138.186.96 0.0.0.7 eq 22
+ permit tcp any host 89.249.209.98 eq 22
+ permit tcp any 89.249.210.168 0.0.0.7 eq 22
+ permit tcp any host 89.249.218.197 eq 22
+ permit tcp any host 141.138.182.58 eq 22
+ permit tcp any host 141.138.179.0 eq 22
+ permit tcp any host 141.138.179.6 eq 22
+ permit ip host 193.227.181.181 host 89.249.220.50
+ permit ip any 89.249.215.40 0.0.0.7
+ permit ip any 89.249.214.240 0.0.0.7
+ permit ip any 89.249.215.232 0.0.0.7
+ permit ip any 141.138.182.136 0.0.0.7
+ permit ip any host 141.138.181.100
+ permit tcp any host 89.249.211.100 eq 8291
+ permit tcp any host 89.249.214.10 eq 8291
+ permit tcp any host 89.249.208.115 eq 8291
+ permit tcp any host 89.249.209.126
+ permit icmp any 0.0.0.0 255.255.255.240
+ permit tcp host 85.234.133.143 eq 22 host 89.249.209.91
+ permit tcp host 213.229.74.109 eq 22 host 89.249.209.91
+ permit tcp 109.75.64.0 0.0.0.255 89.249.221.192 0.0.0.7 eq 8291
+ permit tcp 109.75.64.0 0.0.0.255 89.249.211.152 0.0.0.7 eq 8291
+ permit tcp any 89.249.221.224 0.0.0.7 eq 22 telnet
+ permit tcp any host 89.249.211.67 eq telnet
+ permit ip host 213.41.185.85 any
+ permit tcp host 217.14.130.6 eq 22 host 89.249.209.89
+ permit tcp any host 141.138.182.83 eq www
+ permit tcp any host 141.138.182.83 eq 8291
+ deny   tcp any host 89.249.211.137 eq www
+ permit ip any host 93.185.234.158
+ permit ip any 141.138.186.24 0.0.0.7
+ permit ip any host 185.58.200.8
+ permit tcp any eq 22 host 89.249.208.78
+ permit tcp any eq 22 host 89.249.218.27
+ permit tcp any eq 22 host 89.249.208.79
+ permit tcp any eq 22 host 89.249.208.66
+ permit tcp any eq 22 host 89.249.208.81
+ permit tcp any host 89.249.212.101 eq telnet
+ permit tcp any host 89.249.218.218 eq telnet
+ permit tcp any host 89.249.218.219 eq telnet
+ permit tcp any host 89.249.218.220 eq telnet
+ permit tcp any host 89.249.218.221 eq telnet
+ permit udp host 197.231.156.10 89.249.211.176 0.0.0.7 eq domain
+ permit ip any host 141.138.182.30
+ permit udp host 197.231.156.10 host 89.249.218.42 eq domain
+ deny   udp any host 89.249.218.42 eq domain
+ deny   ip host 115.239.228.100 any
+ permit tcp host 62.193.50.193 host 89.249.209.68 eq 22
+ permit tcp any host 141.138.186.10 eq telnet
+ permit icmp host 89.17.126.134 89.249.219.232 0.0.0.7
+ permit tcp any host 89.249.211.194 eq telnet
+ permit ip any 89.249.219.192 0.0.0.7
+ permit tcp any host 89.249.218.197 eq telnet
+ permit icmp host 89.17.126.130 89.249.219.232 0.0.0.7
+ permit icmp host 62.84.94.5 89.249.219.232 0.0.0.7
+ permit icmp host 213.42.76.123 host 89.249.220.46
+ permit tcp host 213.229.74.109 eq 22 89.249.208.64 0.0.0.31
+ permit tcp host 85.234.133.143 eq 22 89.249.208.64 0.0.0.31
+ permit icmp host 172.16.80.25 any
+ permit icmp 212.40.132.16 0.0.0.7 any
+ permit icmp 77.94.34.0 0.0.0.255 any
+ permit icmp 77.94.42.0 0.0.0.255 any
+ permit icmp 77.94.51.0 0.0.0.255 any
+ permit icmp 82.198.27.0 0.0.0.255 any
+ permit icmp 82.198.6.0 0.0.0.255 any
+ permit icmp 77.42.156.120 0.0.0.7 any
+ permit tcp any 89.249.211.160 0.0.0.7 eq 8291
+ permit icmp host 172.16.80.65 any
+ permit tcp any host 89.249.210.235 eq telnet
+ permit tcp any host 89.249.208.116 eq telnet
+ permit ip any host 89.249.220.59
+ permit tcp any 89.249.220.200 0.0.0.7 eq 8291
+ permit tcp any 89.249.211.232 0.0.0.7 eq 8291
+ permit udp any 89.249.208.152 0.0.0.7 eq snmp
+ permit udp any host 89.249.211.19 eq snmp
+ permit udp any 89.249.208.56 0.0.0.7 eq snmp
+ permit udp any 89.249.208.32 0.0.0.7 eq snmp
+ permit icmp any 141.138.181.72 0.0.0.7
+ permit tcp any 89.249.208.56 0.0.0.7 eq telnet
+ permit udp any 89.249.212.80 0.0.0.7 eq snmp snmptrap
+ permit udp any 89.249.212.88 0.0.0.7 eq snmp snmptrap
+ permit udp any 89.249.212.96 0.0.0.7 eq snmp snmptrap
+ permit udp any 89.249.212.104 0.0.0.7 eq snmp snmptrap
+ permit icmp 212.12.165.40 0.0.0.7 89.249.208.128 0.0.0.7
+ permit icmp 212.28.243.216 0.0.0.7 89.249.208.128 0.0.0.7
+ permit udp any host 89.249.211.18 eq snmp
+ deny   udp any any eq snmp
+ permit ip host 91.142.48.221 host 89.249.209.106
+ permit ip host 91.142.60.145 host 89.249.209.106
+ permit ip host 91.142.60.180 host 89.249.209.106
+ permit tcp any 141.138.187.128 0.0.0.7 eq 8291
+ permit tcp any 141.138.187.176 0.0.0.7 eq 8291
+ permit tcp 89.249.211.16 0.0.0.7 eq 22 89.249.208.64 0.0.0.31
+ deny   tcp any eq 22 89.249.209.64 0.0.0.63
+ deny   tcp any eq 22 89.249.220.32 0.0.0.31
+ deny   tcp any eq 22 89.249.213.0 0.0.0.255
+ deny   tcp any eq 22 89.249.208.64 0.0.0.31
+ deny   tcp any 89.249.209.64 0.0.0.63 eq 22
+ deny   tcp any 89.249.220.32 0.0.0.31 eq 22
+ deny   tcp any 89.249.213.0 0.0.0.255 eq 22
+ deny   tcp any 89.249.208.64 0.0.0.31 eq 22
+ deny   tcp any 85.195.139.0 0.0.0.31 eq 22
+ deny   tcp any 85.195.139.0 0.0.0.31 eq telnet
+ permit tcp any host 89.249.210.117 eq telnet
+ permit tcp any host 46.227.249.107 eq telnet
+ permit tcp any 89.249.210.128 0.0.0.7 eq telnet
+ permit tcp any 89.249.208.184 0.0.0.7 eq telnet
+ permit tcp any 46.227.252.208 0.0.0.7 eq telnet
+ deny   tcp any any eq telnet
+ permit ip 10.10.200.0 0.0.0.255 any
+ permit ip 10.10.18.0 0.0.0.255 any
+ deny   tcp any eq 2816 any
+ deny   tcp any any eq 8291
+ deny   tcp any any range 136 139
+ deny   tcp any any eq chargen
+ deny   udp any any eq 19
+ deny   tcp any any eq 37
+ deny   udp any any eq 445
+ deny   tcp any any eq 445
+ deny   tcp any any eq finger
+ deny   tcp any any eq exec
+ deny   tcp any any eq cmd
+ deny   ip 127.0.0.0 0.255.255.255 any
+ deny   ip 192.0.2.0 0.0.0.255 any
+ permit tcp any 141.138.181.0 0.0.0.255 eq www
+ permit tcp any 141.138.181.0 0.0.0.255 eq telnet
+ permit tcp any 141.138.181.0 0.0.0.255 eq ftp
+ permit icmp any host 141.138.179.26
+ deny   ip 224.0.0.0 31.255.255.255 any
+ deny   ip host 255.255.255.255 any
+ deny   ip host 0.0.0.0 any
+ deny   ip 10.0.0.0 0.255.255.255 any
+ deny   ip 172.16.0.0 0.15.255.255 any
+ deny   ip 192.168.0.0 0.0.255.255 any
+ permit ip 89.249.211.16 0.0.0.7 any
+ deny   ip 89.249.208.0 0.0.15.255 any
+ deny   ip 185.58.200.0 0.0.3.255 any
+ deny   ip 93.185.224.0 0.0.15.255 any
+ deny   ip 95.141.48.0 0.0.15.255 any
+ deny   ip 141.138.176.0 0.0.15.255 any
+ deny   ip 46.227.248.0 0.0.7.255 any
+ permit icmp any any packet-too-big
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ permit icmp any any time-exceeded
+ permit icmp host 213.229.74.109 any
+ permit icmp host 85.234.133.143 any
+ permit icmp host 66.220.2.74 host 89.249.209.1
+ permit icmp any 185.58.200.0 0.0.3.255
+ permit icmp any 193.188.128.0 0.0.3.255
+ permit icmp host 54.93.187.237 any
+ deny   icmp any any
+ deny   icmp any any redirect
+ permit ip any 89.249.208.0 0.0.15.255
+ permit ip any 185.58.200.0 0.0.3.255
+ permit ip any 93.185.224.0 0.0.15.255
+ permit ip any 95.141.48.0 0.0.15.255
+ permit ip any 141.138.176.0 0.0.15.255
+ permit ip any 46.227.248.0 0.0.7.255
+ permit ip any 91.142.61.16 0.0.0.15
+ permit ip any 85.195.139.0 0.0.0.31
+ permit ip any 82.198.1.0 0.0.0.255
+ permit ip any 185.30.36.0 0.0.0.255
+ permit ip any 213.204.114.0 0.0.0.255
+ permit ip any 193.188.128.0 0.0.3.255
+ permit ip any 185.171.108.0 0.0.3.255
+ permit ip any 185.182.112.0 0.0.3.255
+ permit ip any 185.220.136.0 0.0.3.255
+ deny   ip any any
+ permit icmp any 141.138.186.72 0.0.0.7
+ip access-list extended EDGEFw
+ip access-list extended EDGFW
+ permit ip any 46.227.254.248 0.0.0.7
+ip access-list extended TESTDSCP
+ permit ip any any dscp af23
+ deny   ip any any
+ip access-list extended TO-BEETLE-1
+ permit ip 172.30.16.0 0.0.3.255 any
+ permit ip 172.30.32.0 0.0.3.255 any
+ permit ip 100.64.32.0 0.0.3.255 any
+ permit ip 100.64.48.0 0.0.3.255 any
+ permit ip 172.30.48.0 0.0.0.255 any
+ permit ip 10.71.8.0 0.0.0.255 any
+ permit ip 10.249.16.0 0.0.15.255 any
+ permit ip 10.249.48.0 0.0.15.255 any
+ permit ip 100.64.64.0 0.0.3.255 any
+ permit ip 100.64.68.0 0.0.3.255 any
+ permit ip 100.64.72.0 0.0.3.255 any
+ permit ip 100.64.76.0 0.0.3.255 any
+ permit ip 100.65.128.0 0.0.63.255 any
+ permit ip 100.65.0.0 0.0.3.255 any
+ permit ip 100.65.4.0 0.0.3.255 any
+ permit ip 100.65.8.0 0.0.3.255 any
+ permit ip 100.65.12.0 0.0.3.255 any
+ permit ip 100.65.16.0 0.0.3.255 any
+ permit ip 100.65.20.0 0.0.3.255 any
+ permit ip 100.65.24.0 0.0.3.255 any
+ permit ip 100.65.28.0 0.0.3.255 any
+ permit ip 100.65.64.0 0.0.3.255 any
+ permit ip 100.65.68.0 0.0.3.255 any
+ permit ip 100.65.72.0 0.0.3.255 any
+ permit ip 100.65.76.0 0.0.3.255 any
+ permit ip 100.65.80.0 0.0.3.255 any
+ permit ip 100.65.84.0 0.0.3.255 any
+ permit ip 100.65.88.0 0.0.3.255 any
+ permit ip 100.65.92.0 0.0.3.255 any
+ deny   ip any any
+ip access-list extended TO-BEETLE-2
+ permit ip 100.65.32.0 0.0.3.255 any
+ permit ip 100.65.36.0 0.0.3.255 any
+ permit ip 100.65.40.0 0.0.3.255 any
+ permit ip 100.65.44.0 0.0.3.255 any
+ permit ip 100.65.96.0 0.0.3.255 any
+ permit ip 100.65.100.0 0.0.3.255 any
+ permit ip 100.65.104.0 0.0.3.255 any
+ permit ip 100.65.108.0 0.0.3.255 any
+ permit ip 100.65.48.0 0.0.3.255 any
+ permit ip 100.65.52.0 0.0.3.255 any
+ permit ip 100.65.112.0 0.0.3.255 any
+ permit ip 100.65.116.0 0.0.3.255 any
+ permit ip 100.64.104.0 0.0.3.255 any
+ permit ip 100.65.56.0 0.0.3.255 any
+ permit ip 100.65.120.0 0.0.3.255 any
+ permit ip 10.71.64.0 0.0.7.255 any
+ permit ip 100.64.96.0 0.0.7.255 any
+ permit ip 100.64.112.0 0.0.7.255 any
+ permit ip 100.64.120.0 0.0.7.255 any
+ permit ip 100.64.128.0 0.0.7.255 any
+ permit ip 100.64.136.0 0.0.7.255 any
+ permit ip 100.64.144.0 0.0.7.255 any
+ permit ip 100.64.152.0 0.0.7.255 any
+ permit ip 100.64.160.0 0.0.7.255 any
+ permit ip 100.64.168.0 0.0.7.255 any
+ permit ip 100.64.176.0 0.0.7.255 any
+ permit ip 100.64.184.0 0.0.7.255 any
+ permit ip 100.64.192.0 0.0.7.255 any
+ permit ip 100.64.200.0 0.0.7.255 any
+ permit ip 100.64.208.0 0.0.7.255 any
+ permit ip 100.64.216.0 0.0.7.255 any
+ deny   ip any any
+ip access-list extended UP-INTERNATIONAL
+ permit ip 185.58.202.0 0.0.0.255 any
+ deny   ip any any
+ip access-list extended UP-JD
+ permit ip 89.249.208.0 0.0.15.255 any
+ permit ip 141.138.176.0 0.0.15.255 any
+ permit ip 185.30.36.0 0.0.0.255 any
+ permit ip 95.141.48.0 0.0.15.255 any
+ permit ip 185.182.112.0 0.0.3.255 any
+ permit ip 185.171.108.0 0.0.3.255 any
+ deny   ip any any
+ip access-list extended UP-RB
+ deny   ip 185.58.202.0 0.0.0.255 any
+ permit ip 89.249.208.0 0.0.15.255 any
+ permit ip 93.185.224.0 0.0.15.255 any
+ permit ip 95.141.48.0 0.0.15.255 any
+ permit ip 141.138.176.0 0.0.15.255 any
+ permit ip 46.227.248.0 0.0.7.255 any
+ permit ip 185.58.200.0 0.0.3.255 any
+ permit ip 185.182.112.0 0.0.3.255 any
+ permit ip 185.171.108.0 0.0.3.255 any
+ deny   ip any any
+!
+!
+ip prefix-list FROM-FB-CACHE seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list FROM-FB-CACHE-IDM seq 10 permit 185.125.157.0/26
+ip prefix-list FROM-FB-CACHE-IDM seq 20 permit 185.125.148.64/26
+ip prefix-list FROM-FB-CACHE-IDM seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list FROM-FB-TERRANET seq 20 permit 185.54.60.0/24
+ip prefix-list FROM-FB-TERRANET seq 30 permit 213.204.127.128/29
+ip prefix-list FROM-FB-TERRANET seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list FROM-NETFLIX-HISSO seq 20 permit 94.72.155.0/24
+ip prefix-list FROM-NETFLIX-HISSO seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-BLACKHOLE seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-ELEPHANT seq 1000 permit 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-GGC seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-INTERNATIONAL seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-INTERNATIONAL-2 seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-IXP seq 10 permit 0.0.0.0/0 le 24
+ip prefix-list PREFIX-FROM-IXP seq 20 permit 185.91.99.0/30
+ip prefix-list PREFIX-FROM-IXP seq 1000 deny 0.0.0.0/0
+!
+ip prefix-list PREFIX-FROM-JDEIDEH seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-JDEIDEH-BK seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-RAS-BEIRUT seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-RAS-BEIRUT-BK seq 10 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-WISE-GGC seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-FROM-WISE-UK seq 100 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 10 permit 95.141.48.0/20
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 20 permit 93.185.224.0/20
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 30 permit 185.58.200.0/22
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 40 permit 141.138.176.0/20
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 50 permit 46.227.248.0/21
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 90 permit 89.249.208.0/20
+ip prefix-list PREFIX-PREPEND-TO-JDEIDEH seq 100 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 11 permit 95.141.48.0/20
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 21 permit 93.185.224.0/20
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 31 permit 185.58.200.0/22
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 41 permit 141.138.176.0/20
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 51 permit 46.227.248.0/21
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 71 permit 185.182.112.0/22 le 24
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 91 permit 185.220.136.0/22 le 24
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 101 permit 89.249.208.0/20
+ip prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-ELEPHANT seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-INTERNATIONAL seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-JDEIDEH seq 10 permit 46.227.248.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 11 permit 141.138.186.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 15 permit 46.227.252.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 16 permit 46.227.253.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 20 permit 46.227.249.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 31 permit 89.249.209.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 40 permit 89.249.220.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 41 permit 89.249.210.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 61 permit 89.249.212.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 71 permit 89.249.213.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 80 permit 93.185.236.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 81 permit 185.30.36.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 91 permit 141.138.181.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 101 permit 89.249.214.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 102 permit 89.249.208.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 111 permit 89.249.219.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 121 permit 89.249.221.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 160 permit 93.185.237.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 161 permit 185.58.200.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 180 permit 93.185.224.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 191 permit 185.171.109.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 192 permit 185.171.108.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 231 permit 89.249.215.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 240 permit 141.138.178.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 241 permit 89.249.222.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 291 permit 141.138.180.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 301 permit 141.138.182.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 361 permit 141.138.187.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 362 permit 141.138.188.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 363 permit 141.138.189.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 530 permit 185.220.139.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 540 permit 185.58.201.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 550 permit 185.58.202.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 560 permit 213.204.114.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 570 permit 91.240.69.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 600 permit 185.182.112.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 601 permit 185.182.113.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 602 permit 185.182.114.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 603 permit 185.182.115.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 604 permit 46.227.254.0/24
+ip prefix-list PREFIX-TO-JDEIDEH seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 70 permit 93.185.235.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 90 permit 93.185.232.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 100 permit 93.185.233.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 110 permit 93.185.229.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 120 permit 93.185.225.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 130 permit 93.185.226.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 140 permit 93.185.227.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 141 permit 141.138.183.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 150 permit 93.185.228.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 151 permit 141.138.184.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 170 permit 93.185.238.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 190 permit 93.185.239.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 200 permit 93.185.230.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 210 permit 93.185.231.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 220 permit 95.141.49.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 221 permit 46.227.255.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 250 permit 141.138.185.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 251 permit 95.141.48.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 261 permit 89.249.217.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 271 permit 141.138.177.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 281 permit 141.138.179.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 282 permit 141.138.176.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 360 permit 95.141.60.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 370 permit 95.141.61.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 380 permit 95.141.62.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 390 permit 95.141.63.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 400 permit 95.141.59.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 420 permit 95.141.57.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 421 permit 95.141.58.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 500 permit 185.220.136.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 510 permit 185.220.137.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 520 permit 185.220.138.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 580 permit 95.141.55.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 590 permit 95.141.56.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 610 permit 89.249.218.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 620 permit 89.249.216.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 710 permit 89.249.211.0/24
+ip prefix-list PREFIX-TO-RAS-BEIRUT seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-WISE-GGC seq 10 permit 89.249.208.0/20 le 24
+ip prefix-list PREFIX-TO-WISE-GGC seq 20 permit 95.141.48.0/20 le 24
+ip prefix-list PREFIX-TO-WISE-GGC seq 30 permit 141.138.176.0/20 le 24
+ip prefix-list PREFIX-TO-WISE-GGC seq 40 permit 93.185.224.0/20 le 24
+ip prefix-list PREFIX-TO-WISE-GGC seq 50 permit 46.227.248.0/21 le 24
+ip prefix-list PREFIX-TO-WISE-GGC seq 60 permit 185.58.202.0/24
+ip prefix-list PREFIX-TO-WISE-GGC seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-WISE-UK-JD seq 261 permit 89.249.217.0/24
+ip prefix-list PREFIX-TO-WISE-UK-JD seq 281 permit 141.138.179.0/24
+ip prefix-list PREFIX-TO-WISE-UK-JD seq 420 permit 95.141.57.0/24
+ip prefix-list PREFIX-TO-WISE-UK-JD seq 421 permit 95.141.58.0/24
+ip prefix-list PREFIX-TO-WISE-UK-JD seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list PREFIX-TO-WISE-UK-RB seq 50 permit 89.249.223.0/24
+ip prefix-list PREFIX-TO-WISE-UK-RB seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list TEST seq 100 deny 0.0.0.0/0
+!
+ip prefix-list TO-FB-CACHE seq 5 deny 0.0.0.0/0 le 32
+ip prefix-list TO-FB-CACHE seq 10 permit 141.138.178.0/24
+ip prefix-list TO-FB-CACHE seq 20 permit 95.141.48.0/24
+ip prefix-list TO-FB-CACHE seq 30 permit 89.249.223.0/24
+ip prefix-list TO-FB-CACHE seq 40 permit 89.249.216.0/24
+ip prefix-list TO-FB-CACHE seq 50 permit 95.141.49.0/24
+ip prefix-list TO-FB-CACHE seq 60 permit 46.227.248.0/24
+ip prefix-list TO-FB-CACHE seq 70 permit 46.227.249.0/24
+ip prefix-list TO-FB-CACHE seq 80 permit 141.138.185.0/24
+ip prefix-list TO-FB-CACHE seq 100 permit 89.249.209.0/24
+ip prefix-list TO-FB-CACHE seq 110 permit 89.249.210.0/24
+ip prefix-list TO-FB-CACHE seq 120 permit 89.249.211.0/24
+ip prefix-list TO-FB-CACHE seq 130 permit 89.249.212.0/24
+ip prefix-list TO-FB-CACHE seq 140 permit 89.249.214.0/24
+ip prefix-list TO-FB-CACHE seq 150 permit 89.249.219.0/24
+ip prefix-list TO-FB-CACHE seq 170 permit 89.249.217.0/24
+ip prefix-list TO-FB-CACHE seq 180 permit 95.141.59.0/24
+ip prefix-list TO-FB-CACHE seq 190 permit 46.227.252.0/24
+!
+ip prefix-list TO-FB-CACHE-IDM seq 10 permit 141.138.177.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 20 permit 89.249.208.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 30 permit 141.138.176.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 50 permit 89.249.218.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 60 permit 89.249.215.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 70 permit 89.249.222.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 80 permit 141.138.180.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 90 permit 141.138.182.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 100 permit 141.138.187.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 110 permit 89.249.220.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 120 permit 141.138.183.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 130 permit 141.138.184.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 150 permit 141.138.179.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 160 permit 46.227.253.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 170 permit 89.249.221.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 180 permit 141.138.188.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 190 permit 46.227.251.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 200 permit 185.58.202.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 300 permit 46.227.254.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 310 permit 93.185.232.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 320 permit 93.185.233.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 330 permit 93.185.229.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 340 permit 93.185.225.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 350 permit 93.185.226.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 360 permit 93.185.227.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 370 permit 93.185.228.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 380 permit 93.185.224.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 390 permit 93.185.230.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 400 permit 93.185.231.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 410 permit 93.185.235.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 411 permit 93.185.236.0/24
+ip prefix-list TO-FB-CACHE-IDM seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list TO-FB-TERRANET seq 10 permit 46.227.255.0/24
+ip prefix-list TO-FB-TERRANET seq 20 permit 89.249.209.0/24
+ip prefix-list TO-FB-TERRANET seq 30 permit 89.249.214.0/24
+ip prefix-list TO-FB-TERRANET seq 40 permit 46.227.248.0/24
+ip prefix-list TO-FB-TERRANET seq 50 permit 89.249.219.0/24
+ip prefix-list TO-FB-TERRANET seq 60 permit 89.249.210.0/24
+ip prefix-list TO-FB-TERRANET seq 70 permit 89.249.212.0/24
+ip prefix-list TO-FB-TERRANET seq 80 permit 46.227.249.0/24
+ip prefix-list TO-FB-TERRANET seq 90 permit 141.138.189.0/24
+ip prefix-list TO-FB-TERRANET seq 100 permit 141.138.191.0/24
+ip prefix-list TO-FB-TERRANET seq 110 permit 141.138.178.0/24
+ip prefix-list TO-FB-TERRANET seq 120 permit 141.138.181.0/24
+ip prefix-list TO-FB-TERRANET seq 130 permit 141.138.186.0/24
+ip prefix-list TO-FB-TERRANET seq 150 permit 89.249.223.0/24
+ip prefix-list TO-FB-TERRANET seq 160 permit 89.249.217.0/24
+ip prefix-list TO-FB-TERRANET seq 170 permit 95.141.60.0/24
+ip prefix-list TO-FB-TERRANET seq 180 permit 95.141.61.0/24
+ip prefix-list TO-FB-TERRANET seq 190 permit 95.141.62.0/24
+ip prefix-list TO-FB-TERRANET seq 200 permit 95.141.63.0/24
+ip prefix-list TO-FB-TERRANET seq 210 permit 95.141.59.0/24
+ip prefix-list TO-FB-TERRANET seq 220 permit 95.141.57.0/24
+ip prefix-list TO-FB-TERRANET seq 230 permit 95.141.58.0/24
+ip prefix-list TO-FB-TERRANET seq 240 permit 95.141.48.0/24
+ip prefix-list TO-FB-TERRANET seq 250 permit 95.141.49.0/24
+ip prefix-list TO-FB-TERRANET seq 260 permit 89.249.211.0/24
+ip prefix-list TO-FB-TERRANET seq 270 permit 46.227.252.0/24
+ip prefix-list TO-FB-TERRANET seq 280 permit 95.141.55.0/24
+ip prefix-list TO-FB-TERRANET seq 290 permit 95.141.56.0/24
+ip prefix-list TO-FB-TERRANET seq 300 permit 141.138.190.0/24
+ip prefix-list TO-FB-TERRANET seq 310 permit 93.185.234.0/24
+ip prefix-list TO-FB-TERRANET seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list TO-NETFLIX-HISSO seq 13 permit 46.227.250.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 14 permit 46.227.251.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 16 permit 46.227.253.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 17 permit 46.227.254.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 20 permit 93.185.234.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 21 permit 93.185.235.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 22 permit 93.185.236.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 23 permit 93.185.232.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 24 permit 93.185.233.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 25 permit 93.185.229.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 26 permit 93.185.225.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 27 permit 93.185.226.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 28 permit 93.185.227.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 29 permit 93.185.228.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 30 permit 93.185.237.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 31 permit 93.185.238.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 32 permit 93.185.224.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 33 permit 93.185.239.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 34 permit 93.185.230.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 35 permit 93.185.231.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 50 permit 141.138.179.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 54 permit 141.138.187.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 55 permit 141.138.188.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 57 permit 141.138.180.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 58 permit 141.138.182.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 62 permit 141.138.177.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 64 permit 141.138.183.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 65 permit 141.138.184.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 80 permit 95.141.62.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 85 permit 95.141.63.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 91 permit 95.141.51.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 92 permit 95.141.52.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 93 permit 95.141.53.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 94 permit 95.141.54.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 117 permit 95.141.48.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 119 permit 89.249.216.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 120 permit 89.249.209.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 121 permit 89.249.220.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 125 permit 89.249.213.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 128 permit 89.249.221.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 130 permit 89.249.215.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 131 permit 89.249.222.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 135 permit 185.30.36.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 150 permit 185.58.200.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 152 permit 185.58.202.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 153 permit 185.58.203.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 155 permit 185.182.112.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 156 permit 185.182.113.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 157 permit 185.182.114.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 158 permit 185.182.115.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 160 permit 185.220.136.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 161 permit 185.220.137.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 162 permit 185.220.138.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 163 permit 185.220.139.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 165 permit 185.171.108.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 166 permit 185.171.109.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 167 permit 185.171.110.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 168 permit 185.171.111.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 169 permit 89.249.208.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 171 permit 95.141.56.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 172 permit 95.141.55.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 179 permit 95.141.57.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 180 permit 95.141.49.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 181 permit 141.138.190.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 182 permit 46.227.252.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 184 permit 89.249.223.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 185 permit 141.138.186.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 186 permit 141.138.181.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 187 permit 141.138.178.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 188 permit 141.138.191.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 189 permit 141.138.189.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 191 permit 89.249.212.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 192 permit 89.249.210.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 193 permit 89.249.219.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 195 permit 89.249.214.0/24
+ip prefix-list TO-NETFLIX-HISSO seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-IX seq 10 permit 95.141.48.0/20 le 24
+ip prefix-list WISE-IX seq 20 permit 93.185.224.0/20 le 24
+ip prefix-list WISE-IX seq 30 permit 89.249.208.0/20 le 24
+ip prefix-list WISE-IX seq 40 permit 46.227.248.0/21 le 24
+ip prefix-list WISE-IX seq 110 permit 185.58.200.0/22 le 24
+ip prefix-list WISE-IX seq 120 permit 185.30.36.0/24
+ip prefix-list WISE-IX seq 130 permit 185.182.112.0/22 le 24
+ip prefix-list WISE-IX seq 140 permit 185.171.108.0/22 le 24
+ip prefix-list WISE-IX seq 150 permit 185.220.136.0/22 le 24
+ip prefix-list WISE-IX seq 160 permit 185.171.109.0/24
+ip prefix-list WISE-IX seq 170 permit 185.171.108.0/24
+ip prefix-list WISE-IX seq 180 permit 213.204.114.0/24
+ip prefix-list WISE-IX seq 190 permit 91.240.69.0/24
+ip prefix-list WISE-IX seq 200 permit 141.138.176.0/24
+ip prefix-list WISE-IX seq 210 permit 141.138.177.0/24
+ip prefix-list WISE-IX seq 220 permit 141.138.178.0/24
+ip prefix-list WISE-IX seq 230 permit 141.138.179.0/24
+ip prefix-list WISE-IX seq 240 permit 141.138.180.0/24
+ip prefix-list WISE-IX seq 245 permit 141.138.181.0/24
+ip prefix-list WISE-IX seq 250 permit 141.138.182.0/24
+ip prefix-list WISE-IX seq 260 permit 141.138.183.0/24
+ip prefix-list WISE-IX seq 270 permit 141.138.184.0/24
+ip prefix-list WISE-IX seq 280 permit 141.138.185.0/24
+ip prefix-list WISE-IX seq 290 permit 141.138.186.0/24
+ip prefix-list WISE-IX seq 300 permit 141.138.187.0/24
+ip prefix-list WISE-IX seq 310 permit 141.138.188.0/24
+ip prefix-list WISE-IX seq 320 permit 141.138.189.0/24
+ip prefix-list WISE-IX seq 330 permit 141.138.190.0/24
+ip prefix-list WISE-IX seq 340 permit 141.138.191.0/24
+ip prefix-list WISE-IX seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-NETWORKS seq 10 permit 95.141.48.0/20 le 24
+ip prefix-list WISE-NETWORKS seq 20 permit 93.185.224.0/20 le 24
+ip prefix-list WISE-NETWORKS seq 30 permit 89.249.208.0/20 le 24
+ip prefix-list WISE-NETWORKS seq 40 permit 46.227.248.0/21 le 24
+ip prefix-list WISE-NETWORKS seq 100 permit 141.138.176.0/20 le 24
+ip prefix-list WISE-NETWORKS seq 110 permit 185.58.200.0/22 le 24
+ip prefix-list WISE-NETWORKS seq 120 permit 185.30.36.0/24
+ip prefix-list WISE-NETWORKS seq 130 permit 185.182.112.0/22 le 24
+ip prefix-list WISE-NETWORKS seq 140 permit 185.171.108.0/22 le 24
+ip prefix-list WISE-NETWORKS seq 150 permit 185.220.136.0/22 le 24
+ip prefix-list WISE-NETWORKS seq 160 permit 185.171.109.0/24
+ip prefix-list WISE-NETWORKS seq 170 permit 185.171.108.0/24
+ip prefix-list WISE-NETWORKS seq 180 permit 213.204.114.0/24
+ip prefix-list WISE-NETWORKS seq 190 permit 91.240.69.0/24
+ip prefix-list WISE-NETWORKS seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-NETWORKS-JDEIDEH-EMPTY seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-NETWORKS-RAS-BEIRUT-EMPTY seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-TEST seq 10 permit 185.58.202.0/24
+ip prefix-list WISE-TEST seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list WISE-TEST-2 seq 1000 deny 0.0.0.0/0 le 32
+!
+ip prefix-list prefix2 seq 570 permit 46.227.251.0/24
+ip prefix-list prefix2 seq 580 permit 95.141.55.0/24
+ip sla 8888
+ icmp-echo 8.8.8.8 source-interface Loopback0
+ threshold 2
+ frequency 8
+ip sla schedule 8888 life forever start-time now
+ip sla 1024241
+ icmp-echo 10.24.24.1
+ frequency 5
+ip sla schedule 1024241 life forever start-time now
+ip sla 10101838
+ icmp-echo 10.10.18.38 source-ip 10.10.18.37
+ threshold 20
+ frequency 10
+ip sla schedule 10101838 life forever start-time now
+ip sla 10242410
+ icmp-echo 10.24.24.10
+ frequency 5
+ip sla schedule 10242410 life forever start-time now
+ip sla 101018126
+ icmp-echo 10.10.18.126
+ frequency 5
+ip sla schedule 101018126 life forever start-time now
+ip sla 172168025
+ icmp-echo 172.16.80.25
+ threshold 15
+ frequency 5
+ip sla schedule 172168025 life forever start-time now
+ip sla 172168065
+ icmp-echo 172.16.80.65
+ threshold 20
+ frequency 5
+ip sla schedule 172168065 life forever start-time now
+no logging esm config
+no logging trap
+access-list 13 permit 192.168.139.225
+access-list 13 permit 192.168.139.248
+access-list 13 permit 192.168.139.197
+access-list 13 permit 192.168.139.207
+access-list 13 permit 192.168.139.211
+access-list 13 permit 192.168.139.219
+access-list 13 permit 192.168.139.218
+access-list 13 permit 192.168.139.220
+access-list 13 permit 192.168.139.65
+access-list 13 permit 192.168.139.39
+access-list 98 permit 192.168.139.225
+access-list 98 permit 192.168.139.229
+access-list 98 permit 192.168.139.248
+access-list 98 permit 192.168.139.197
+access-list 98 permit 192.168.139.201
+access-list 98 permit 192.168.139.39
+access-list 98 permit 192.168.139.61
+ipv6 route 2A02:F50::/32 2A02:F50:0:1::B
+ipv6 route 2A02:F50::/32 Null0 250
+ipv6 route 2000::/3 2A02:4D8:4:1::1 name IPv6-Default-GW
+!
+!
+ipv6 prefix-list PREFIX-FROM-JDEIDEH-BK seq 10 deny ::/128
+!
+ipv6 prefix-list PREFIX-FROM-RAS-BEIRUT-BK seq 10 deny ::/128
+!
+ipv6 prefix-list PREFIX-FROM-TUNNEL-BROKER seq 5 deny ::/0
+!
+ipv6 prefix-list PREFIX-TO-INTERNATIONAL seq 10 permit 2A02:F50::/32
+ipv6 prefix-list PREFIX-TO-INTERNATIONAL seq 100 deny ::/0 le 128
+!
+ipv6 prefix-list PREFIX-TO-IXP seq 5 permit 2A02:F50::/32
+ipv6 prefix-list PREFIX-TO-IXP seq 100 deny ::/0 le 128
+!
+ipv6 prefix-list PREFIX-TO-JDEIDEH seq 10 permit 2A02:F50::/32
+ipv6 prefix-list PREFIX-TO-JDEIDEH seq 100 deny ::/0 le 128
+!
+ipv6 prefix-list PREFIX-TO-RASBEIRUT seq 10 permit 2A02:F50::/32
+ipv6 prefix-list PREFIX-TO-RASBEIRUT seq 100 deny ::/0 le 128
+!
+ipv6 prefix-list PREFIX-TO-TUNNEL-BROKER seq 5 permit 2A02:F50::/32
+ipv6 prefix-list PREFIX-TO-TUNNEL-BROKER seq 10 permit 2000::/3 le 32
+ipv6 prefix-list PREFIX-TO-TUNNEL-BROKER seq 100 deny ::/0 le 128
+route-map UPPOLICY permit 90
+ match ip address UP-INTERNATIONAL
+ set ip next-hop 172.16.80.25
+!
+route-map UPPOLICY permit 100
+ match ip address UP-JD
+ set ip default next-hop 172.16.41.13
+!
+route-map UPPOLICY permit 110
+ match ip address UP-RB
+ set ip default next-hop 172.16.40.13
+!
+route-map ROUTEMAP-TO-WISE-UK-JD permit 10
+ match ip address prefix-list PREFIX-TO-WISE-UK-JD
+ set ip next-hop 10.10.18.57
+!
+route-map ROUTEMAP-TO-WISE-UK-RB permit 10
+ match ip address prefix-list PREFIX-TO-WISE-UK-RB
+ set ip next-hop 10.10.18.61
+!
+route-map ROUTEMAP-WISE-IX permit 10
+ match ip address prefix-list WISE-IX
+ set ip next-hop 10.10.18.37
+!
+route-map ROUTEMAP-TO-RAS-BEIRUT, permit 10
+!
+route-map ROUTEMAP-TO-INTERNATIONAL permit 15
+ match ip address PREFIX-TO-INTERNATIONAL
+ set as-path prepend 41833
+!
+route-map ROUTEMAP-TO-JDEIDEH permit 5
+ match ip address prefix-list PREFIX-TO-JDEIDEH
+ set as-path prepend 41833
+!
+route-map ROUTEMAP-TO-JDEIDEH permit 10
+ match ip address prefix-list PREFIX-PREPEND-TO-JDEIDEH
+ set as-path prepend 41833 41833 41833 41833 41833
+!
+route-map ROUTEMAP-TO-RAS-BEIRUT permit 5
+ match ip address prefix-list PREFIX-TO-RAS-BEIRUT
+ set as-path prepend 41833
+!
+route-map ROUTEMAP-TO-RAS-BEIRUT permit 10
+ match ip address prefix-list PREFIX-PREPEND-TO-RAS-BEIRUT
+ set as-path prepend 41833 41833 41833 41833 41833
+!
+route-map FROM-BEETLES permit 10
+ match ip address UP-JD
+ set ip default next-hop 172.16.41.13
+!
+route-map FROM-BEETLES permit 20
+ match ip address UP-RB
+ set ip default next-hop 172.16.40.13
+!
+snmp-server community PolyM1x RO 98
+snmp-server location Moscanet SAL
+snmp-server contact nocwise@wise.net.lb
+!
+tacacs server MGMT
+ address ipv4 192.168.139.91
+ key 7 1330303B580200213E
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 60 0
+ privilege level 0
+ password 7 14001B180907252537273F30
+ login authentication CONSOLE
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ access-class 13 in vrf-also
+ exec-timeout 15 0
+ transport input ssh
+line vty 5 15
+ access-class 13 in vrf-also
+ exec-timeout 15 0
+ transport input ssh
+!
+ntp source GigabitEthernet0
+ntp server vrf Mgmt-intf 192.168.139.104
+!
+!
+!
+!
+!
+end

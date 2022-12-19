@@ -1,0 +1,43 @@
+---
+- name: khaled tasks
+  hosts: ROUTERS
+  gather_facts: false
+ # ansible_connection: ansible.netcommon.network_cli
+
+  tasks:
+    - name: Show running configuration on the device
+      ios_command:
+        commands:
+          - show run
+      register: config
+
+    - name: print output
+      debug:
+        var: config.stdout_lines
+
+
+#    - name: Save output to bkp2
+#      copy:
+#        content: "{{config.stdout[0]}}"
+#        dest: "bkp2.txt"
+
+#    - name: interface configuration address
+#      ios_config:
+#         parents: "interface lo9"
+#         lines:
+#           - ip address 192.168.2.11 255.255.255.0
+#           - description testkhaled2
+#           - no shutdown
+
+    
+#    - name: Push the configuration file
+#      ios_config:
+#        src: "uploadcfg1.txt"
+  
+#    - name: configure top level configuration
+#      ios_config:
+#         lines: hostname "{{ my_var }}"
+
+#     - name: save changed configuration
+#       ios_facts:
+#        gather_subset: all

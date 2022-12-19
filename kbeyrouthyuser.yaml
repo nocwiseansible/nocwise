@@ -1,0 +1,19 @@
+---
+- name: Sh run
+  hosts: ROUTERS
+  gather_facts: false
+
+  tasks:
+    - name: Create new user kbansible
+      ios_config:
+        backup: yes
+        lines:
+          - username teest priv 15 secret test      
+    
+    - name: save running to start-config when modified
+      ios_config:
+        save_when: modified
+
+    - name: save changed config
+      ios_facts:
+        gather_subset: all

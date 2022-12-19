@@ -1,0 +1,14 @@
+---
+- name: config
+  hosts: ROUTERS
+  gather_facts: yes
+ 
+  tasks: 
+    - name: interface configuration address
+      ios_config:
+         parents: "interface lo9"
+         lines:
+           - ip address 192.168.2.11 255.255.255.0
+           - description testkhaled2
+           - no shutdown
+

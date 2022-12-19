@@ -1,0 +1,17 @@
+---
+- name: config
+  hosts: ROUTERS
+  gather_facts: false
+ 
+  vars:
+    cli:
+      username: kbeyrouthy
+      password: terminal@2016      
+
+ios_config  tasks: 
+    - name: interface IP address
+      ios_config:
+         lines:
+            - ip address 192.168.1.10 255.255.255.0
+            - no shutdown
+            - full-duplex

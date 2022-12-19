@@ -1,0 +1,3 @@
+[submodule "ansiblenoc"]
+	path = ansiblenoc
+	url = https://github.com/nocwiseansible/ansiblenoc.git

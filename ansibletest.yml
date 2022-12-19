@@ -1,0 +1,23 @@
+---
+- hosts: ROUTERS
+  gather_facts: no
+  connection: local
+ 
+  tasks:
+        - name: CHANGE HOSTNAME EDGE-BCKP-ASR
+          ios_config:
+             parents: "interface lo3"
+             lines:
+               - description MOETEST
+               - ip address 89.249.209.4 255.255.255.255
+               - no shutdown
+#        - name: CONFIG FROM TXT
+ #         ios_config:
+ #            src: "uploadcfg1.txt"
+
+        - name: SAVE & BACKUP CONFIGURATION
+          ios_config:
+             save_when: modified
+
+
+

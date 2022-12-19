@@ -1,0 +1,16 @@
+---
+- name: Get hostname and OS-version
+  hosts: ROUTERS
+  gather_facts: false
+
+  tasks:
+    - name: sh run configuration
+      ios_command:
+        commands:
+          - show ip interface brief
+          - show run 
+      register: output
+
+    - name: print output
+      debug:
+        var: output.stdout_lines
